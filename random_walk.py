@@ -4,6 +4,7 @@
 Created on Fri Jan 17 14:25:03 2020
 
 @author: florian
+edit: wedemannr
 """
 
 import numpy as np
@@ -36,7 +37,7 @@ t = np.arange(0,1+dt,dt)
 for i in range(len(t)):
     #print(i)
     x_true[i] = x0 * np.exp((a-0.5*b**2)*t[i]+b*W[i])
-    
+
 plt.figure()
 plt.plot(x_true,label="x_true")
 plt.title("x_true")
@@ -52,7 +53,7 @@ xn = []
 for i in range(0,n):
     x_n = x_n + a*x_n*dt + b*x_n*dW[i]
     xn.append(x_n)
-    
+
 #plt.figure()
 plt.plot(xn,"r",label="xn")
 plt.legend()
@@ -61,3 +62,4 @@ plt.legend()
 plt.figure()
 plt.plot(dW)
 plt.title("dW")
+plt.show()
