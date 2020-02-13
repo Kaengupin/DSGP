@@ -4,6 +4,7 @@
 Created on Fri Jan 17 14:25:03 2020
 
 @author: florian
+edit: wedemannr
 """
 
 import numpy as np
