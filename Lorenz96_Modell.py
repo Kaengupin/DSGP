@@ -51,6 +51,37 @@ array_Y = fY.create_earray(fY.root, 'array_Y', tables.Float64Atom(), shape =(0,J
 array_X.append(X[2:-1].reshape((1, K)))
 array_Y.append(Y[1:-2].reshape((1, J*K)))
 
+def dX_val(X1,Y1,K1,J1):
+    dX1 = np.zeros((K1+3))
+    for k in range(2,K1+2):
+        dX1[k] = - X1[k-1]*(X1[k-2]-X1[k+1]) - X1[k] + F - h*c/b * np.sum(Y1[(J1*(k-1)):k*J1])
+
+    dX1[0] = dX1[-3]
+    dX1[1] = dX1[-2]
+    dX1[-1] = dX1[2]
+    return(dX1)
+
+
+def dY_val(X1,Y1,K1,J1):
+    dY1= np.zeros(((K1*J1)+3))
+    for j in range(1,(K1*J1)+1):
+        dY1[j] = -c * b * Y1[j+1] * (Y1[j+2] - Y1[j-1]) - c * Y1[j] + (h * c)/b * X1[int((j-1)/J1)]
+    dY1[0] = dY1[-1]
+    dY1[-2] = dY1[1]
+    dY1[-3] = dY1[2]
+    return(dY1)
+
+def dX_valred(X1,K1):
+    dX1 = np.zeros((K1+3))
+    ek = 0
+    for k in range(2,K1+2):
+        ek = 0.984 * ek + 1.74 * np.sqrt(1-0.984**2)*np.random.normal(0,1)
+        gU = 0.275 + 1.59*X1[k] - 0.0190*(X1[k])**2 - 0.0130*(X1[k])**3 + 0.000707*(X1[k])**4 + ek
+        dX1[k] = - X1[k-1]*(X1[k-2]-X1[k+1])-X1[k]+F-gU
+    dX1[0]=dX1[-3]
+    dX1[1]=dX1[-2]
+    dX1[-1]=dX1[2]
+    return(dX1)
 
 print('Die Berechnung läuft über ' + str(T) + ' Zeitschritte!')
 ### Calculating
@@ -58,41 +89,6 @@ for tt in range(1,int(T)):
 
     if (tt % (T/100)) == 0:
         print('Fortschritt: ' + str(int(tt*100/T)) + '%')
-
-    def dX_val(X1,Y1,K1,J1):
-        dX1 = np.zeros((K1+3))
-
-        for k in range(2,K1+2):
-            dX1[k] = - X1[k-1]*(X1[k-2]-X1[k+1]) - X1[k] + F - h*c/b * np.sum(Y1[(J1*(k-1)):k*J1])
-
-
-        dX1[0] = dX1[-3]
-        dX1[1] = dX1[-2]
-        dX1[-1] = dX1[2]
-        return(dX1)
-
-
-    def dY_val(X1,Y1,K1,J1):
-        dY1= np.zeros(((K1*J1)+3))
-
-        for j in range(1,(K1*J1)+1):
-            dY1[j] = -c * b * Y1[j+1] * (Y1[j+2] - Y1[j-1]) - c * Y1[j] + (h * c)/b * X1[int((j-1)/J1)]
-        dY1[0] = dY1[-1]
-        dY1[-2] = dY1[1]
-        dY1[-3] = dY1[2]
-        return(dY1)
-
-    def dX_valred(X1,K1):
-        dX1 = np.zeros((K1+3))
-        ek = 0
-        for k in range(2,K1+2):
-            ek = 0.984 * ek + 1.74 * np.sqrt(1-0.984**2)*np.random.normal(0,1)
-            gU = 0.275 + 1.59*X1[k] - 0.0190*(X1[k])**2 - 0.0130*(X1[k])**3 + 0.000707*(X1[k])**4 + ek
-            dX1[k] = - X1[k-1]*(X1[k-2]-X1[k+1])-X1[k]+F-gU
-        dX1[0]=dX1[-3]
-        dX1[1]=dX1[-2]
-        dX1[-1]=dX1[2]
-        return(dX1)
 
 
     if scheme == "EF":
