@@ -15,7 +15,7 @@ try:
 except:
     pass
 
-dt = 2e-4
+dt = 2**(-4)
 n=int(1/dt)+1
 
 dW = np.random.normal(0,1,n)*np.sqrt(dt)

@@ -125,7 +125,7 @@ for tt in range(1,int(T)):
     else:
         print('Wähle ein implimentiertes scheme. (EF für Euler forward, RK für Runge Kutta scheme oder RRK für Reduced Runge Kutta)')
 
-    if (PERT == True):
+    if PERT:
         if (tt == 5000):
             X = X + d
             Y = Y + d
