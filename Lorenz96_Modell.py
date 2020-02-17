@@ -23,8 +23,8 @@ h, c, b  = 1, 10, 10
 d = 1e-9
 
 t  = 0.0001
-TU = 1
-wpt = 100
+TU = 10
+idfk = 100
 T = TU/t
 
 title1 = "Lorenz96_XMode"
@@ -32,7 +32,7 @@ title2 = "Lorenz96_YMode"
 
 
 ### choose scheme
-scheme = "RRK"     # EF:Euler Forward, RK:Runge Kutta, RRK:Reduced Runge Kutta
+scheme = "RK"     # EF:Euler Forward, RK:Runge Kutta, RRK:Reduced Runge Kutta
 
 def dX_val(X1,Y1,K1,J1):
     dX1 = np.zeros((K1+3))
@@ -68,8 +68,8 @@ def dX_valred(X1,K1):
 
        
 # initial values for X and Y, vary for different initial states
-X = np.zeros((K+3))+np.random.normal(size=K+3)
-Y = np.zeros((J*K+3))+np.random.normal(size=J*K+3)
+X = np.zeros((K+3))#+np.random.normal(size=K+3)
+Y = np.zeros((J*K+3))#+np.random.normal(size=J*K+3)
 
 dX, dY = np.zeros((K+3)), np.zeros((J*K+3))
  
@@ -82,6 +82,7 @@ array_Y = fY.create_earray(fY.root, 'array_Y', tables.Float64Atom(), shape =(0,J
 array_X.append(X[2:-1].reshape((1, K)))
 array_Y.append(Y[1:-2].reshape((1, J*K)))
 T = TU/t
+print("Berechnung ueber " + str(T) + " Zeitschritte")
 for tt in range(1,int(T)):
     if (tt % (T/100)) == 0:
         print('Fortschritt: ' + str(int(tt*100/T)) + '%')
@@ -127,7 +128,7 @@ for tt in range(1,int(T)):
             Y = Y + d
 
 
-    if ((tt*t*wpt) % 1) == 0.:
+    if (np.round(tt/idfk,4) % 1) == 0.:
         array_X.append(X[2:-1].reshape((1, K)))
         array_Y.append(Y[1:-2].reshape((1, J*K)))
 
