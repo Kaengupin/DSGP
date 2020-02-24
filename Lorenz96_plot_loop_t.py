@@ -69,6 +69,19 @@ for i in range(0,nt-1):
 
 plt.figure()
 plt.loglog(dt,error[:,0])
+plt.title('Error Growth of X Modes',fontsize=16)
+#plt.xticks(fontsize=10)
+#plt.yticks(fontsize=10)
+plt.xlabel('Timestep',fontsize=14)
+plt.ylabel('mean error wrt integration with smalllest timestep',fontsize=14)
+plt.savefig('Plots/Lecture_03_error_growth_x_modes.pdf')
 
 plt.figure()
 plt.loglog(dt,error[:,1])
+plt.title('Error Growth of Y Modes',fontsize=16)
+plt.xlabel('Timestep',fontsize=14)
+plt.ylabel('mean error wrt integration with smalllest timestep',fontsize=14)
+plt.savefig('Plots/Lecture_03_error_growth_y_modes.pdf')
+
+
+
