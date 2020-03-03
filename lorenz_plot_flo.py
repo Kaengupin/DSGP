@@ -20,14 +20,14 @@ except:
 ## Choose which Plots
 Model = False
 Histogram = False
-Hovmoeller = True
+Hovmoeller = False
 Y_Forcing = False
 Temp_Corr = False
 Spat_Corr = False
-Energy_cyle = False
+Energy_cyle = True
 
 ### Save Plots
-SavePlot = False
+SavePlot = True
 outdir = "Plots/"
 
 
@@ -35,17 +35,17 @@ K = 8
 J = 32
 F = 18
 h, c, b  = 1, 10, 10
-TU = 10
+TU = 100
 
 
 time = np.arange(0.0, 2000, 1)
 
 
-fX = tables.open_file('data/Lorenz96_XMode_RK_Pert_False.h5', mode='r')
-fY = tables.open_file('data/Lorenz96_YMode_RK_Pert_False.h5', mode='r')
+#fX = tables.open_file('data/Lorenz96_XMode_RK_Pert_False.h5', mode='r')
+#fY = tables.open_file('data/Lorenz96_YMode_RK_Pert_False.h5', mode='r')
 
-#fX = tables.open_file('data/Lorenz96_XMode_RK_Pert_False_TU_100.h5', mode='r')
-#fY = tables.open_file('data/Lorenz96_YMode_RK_Pert_False_TU_100.h5', mode='r')
+fX = tables.open_file('data/Lorenz96_XMode_RK_Pert_False_TU_100.h5', mode='r')
+fY = tables.open_file('data/Lorenz96_YMode_RK_Pert_False_TU_100.h5', mode='r')
 
 X = fX.root.array_X
 Y = fY.root.array_Y
@@ -73,9 +73,11 @@ if Histogram:
     ## plot distribution of X modes
     plt.figure()
     plt.hist(X[:,:K].flatten(),density=1,bins=30)
-    plt.xlabel('X')
-    plt.ylabel('PDF')
-    #plt.title('PDF of X modes')
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.xlabel('X',fontsize=14)
+    plt.ylabel('PDF',fontsize=14)
+    plt.title('PDF of X modes',fontsize=16)
     if SavePlot:
         plt.savefig(outdir + "Lorenz96_PDF_X_modes_TU_"+str(TU)+".png", dpi = 300)
     #plt.close(fig)
@@ -83,9 +85,11 @@ if Histogram:
     ## plot distribution of Y modes
     plt.figure()
     plt.hist(Y[:,:J*K].flatten(),density=1,bins=30)
-    plt.xlabel('Y')
-    plt.ylabel('PDF')
-    #plt.title('PDF of Y modes')
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.xlabel('Y',fontsize=14)
+    plt.ylabel('PDF',fontsize=14)
+    plt.title('PDF of Y modes',fontsize=16)
     if SavePlot:
         plt.savefig(outdir + "Lorenz96_PDF_Y_modes_TU_"+str(TU)+".png", dpi = 300)
     #plt.close(fig)
@@ -94,15 +98,20 @@ if Hovmoeller:
     ##hovmoeller diagramm
     plt.figure()
     plt.contourf(X)
-    plt.xlabel("X-Modes")
-    plt.ylabel("Time")
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.xlabel("X-Modes",fontsize=14)
+    plt.ylabel("Time",fontsize=-14)
+    plt.title('Hovmoeller diagram of X modes',fontsize=16)
     if SavePlot:
         plt.savefig(outdir + "Lorenz96_Hovmoeller_X_modes_TU_"+str(TU)+".png", dpi = 300)
     plt.figure()
     plt.contourf(Y)
-    plt.xlabel("Y-Modes")
-    plt.ylabel("Time")
-
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.xlabel("Y-Modes",fontsize=14)
+    plt.ylabel("Time",fontsize=14)
+    plt.title('Hovmoeller diagram of Y modes',fontsize=16)
     if SavePlot:
         plt.savefig(outdir + "Lorenz96_Hovmoeller_Y_modes_TU_"+str(TU)+".png", dpi = 300)
 
@@ -112,9 +121,11 @@ if Y_Forcing:
     for k in range(2,K):
         plt.plot(X[:,k],h*c/b * np.sum(Y[:,(J*(k-1)+1):k*J], axis = 1) , marker ='.' , linestyle='None',Color='k')
                         
-    plt.xlabel('X_k')
-    plt.ylabel(r'$\frac{hc}{b}\sum_{i=J(k-1)+1}^{kJ} Y_j$')
-    plt.title('X modes vs forcing of Y modes')
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.xlabel('X_k',fontsize=14)
+    plt.ylabel(r'$\frac{hc}{b}\sum_{i=J(k-1)+1}^{kJ} Y_j$',fontsize=14)
+    plt.title('X modes vs forcing of Y modes',fontsize=16)
     if SavePlot:
         plt.savefig(outdir + "Lorenz96_Forcing_Y_on_X_modes_TU_"+str(TU)+".png", dpi = 300)
 
@@ -127,9 +138,11 @@ if Temp_Corr:
         ts = pd.Series(Y[:,i])
         ac = ac + np.array(list(map(ts.autocorr,range(0,100))))/(K*J)
     plt.plot(time[0:100], ac)
-    plt.ylabel('Autokorrelation')
-    plt.xlabel('time lag')
-    plt.title('Temporal Autocorrelation of Y modes')
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.ylabel('Autokorrelation',fontsize=14)
+    plt.xlabel('time lag',fontsize=14)
+    plt.title('Temporal Autocorrelation of Y modes',fontsize=16)
     if SavePlot:
         plt.savefig(outdir + "Lorenz96_TempCorr_Y_modes_TU_"+str(TU)+".png", dpi = 300)
 
@@ -142,9 +155,11 @@ if Temp_Corr:
         ts = pd.Series(X[:,i])
         ac = ac + np.array(list(map(ts.autocorr,range(0,100))))/(K)
     plt.plot(time[0:100], ac)
-    plt.ylabel('Autokorrelation')
-    plt.xlabel('time lag')
-    plt.title('Temporal Autocorrelation of X modes')
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.ylabel('Autokorrelation',fontsize=14)
+    plt.xlabel('time lag',fontsize=14)
+    plt.title('Temporal Autocorrelation of X modes',fontsize=16)
     if SavePlot:
         plt.savefig(outdir + "Lorenz96_TempCorr_X_modes_TU_"+str(TU)+".png", dpi = 300)
 
@@ -183,7 +198,6 @@ if Spat_Corr:
 
 
 if Energy_cyle:
-    plt.figure()
     E_X = []
     E_Y = []
     E = []
@@ -206,24 +220,40 @@ if Energy_cyle:
         M.append(m)
         dtE.append(-ex - c*ey + F * mx)
     
-    plt.plot(E_X)
-    plt.plot(E_Y)
-    plt.plot(M_X)
-    plt.plot(M_Y)
+    plt.figure()
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.plot(E_X,label='E_X')
+    plt.plot(E_Y,label='E_Y')
+    plt.title('Energy terms',fontsize=16)
+    plt.legend()
     if SavePlot:
-        plt.savefig(outdir + "Lorenz96_Energy_E_modes.png_TU_"+str(TU)+".png", dpi = 300)
+        plt.savefig(outdir + "Lorenz96_Energy_E_modes_TU_"+str(TU)+".png", dpi = 300)
+
+
+    plt.figure()
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.plot(M_X,label='M_X')
+    plt.plot(M_Y,label='M_Y')
+    plt.title('Momentum terms',fontsize=16)
+    plt.legend()
+    if SavePlot:
+        plt.savefig(outdir + "Lorenz96_Momentum_M_modes_TU_"+str(TU)+".png", dpi = 300)
 
     
     plt.figure()
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
     plt.plot(dtE)
-    if SavePlot:
-        plt.savefig(outdir + "Lorenz96_Energy_dtE.png_TU_"+str(TU)+".png", dpi = 300)
+    #if SavePlot:
+    #    plt.savefig(outdir + "Lorenz96_Energy_dtE.png_TU_"+str(TU)+".png", dpi = 300)
 
     
     plt.figure()
     plt.plot(E)
-    if SavePlot:
-        plt.savefig(outdir + "Lorenz96_Energy_E.png_TU_"+str(TU)+".png", dpi = 300)
+    #if SavePlot:
+    #    plt.savefig(outdir + "Lorenz96_Energy_E.png_TU_"+str(TU)+".png", dpi = 300)
 
 
 #
