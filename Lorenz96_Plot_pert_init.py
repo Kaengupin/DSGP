@@ -107,11 +107,13 @@ def func(v,b,c):
 popt,pcov = spo.curve_fit(func,x[:200],X_diff_mean[433:633],bounds = ([5e-10,0.005],[2e-9,0.5]))
 #
 plt.figure()
-plt.semilogy(x,X_diff_mean[433:700])
-plt.semilogy(x,func(x,popt[0],popt[1]),"r")
-plt.title('magnitude of separation of nearby Lorenz trajectories')
+plt.semilogy(x,X_diff_mean[433:700], label = "Mean Deviation")
+plt.semilogy(x,func(x,popt[0],popt[1]),"r", label = r"$5\cdot 10^{-10} \cdot \mathrm{exp}(0.1126\,t)$")
+#plt.title('magnitude of separation of nearby Lorenz trajectories')
 plt.xlabel('time')
-plt.savefig('Plots/Lecture_04_mean_over_initial_states.pdf')
+plt.ylabel("Value")
+plt.legend(fontsize=12)
+plt.savefig('Plots/Lecture_04_mean_over_initial_states.png', dpi = 300)
 
 #
 
