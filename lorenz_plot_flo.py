@@ -20,16 +20,18 @@ except:
 ## Choose which Plots
 Model = False
 Histogram = False
+Histogram_Diff = False
 Hovmoeller = False
 Y_Forcing = False
-Temp_Corr = False
+Temp_Corr = True
 Spat_Corr = False
-Energy_cyle = True
+Energy_cyle = False
 
 ### Save Plots
 SavePlot = True
 outdir = "Plots/"
 
+t=0.0001
 
 K = 8
 J = 32
@@ -41,14 +43,21 @@ TU = 100
 time = np.arange(0.0, 2000, 1)
 
 
-#fX = tables.open_file('data/Lorenz96_XMode_RK_Pert_False.h5', mode='r')
-#fY = tables.open_file('data/Lorenz96_YMode_RK_Pert_False.h5', mode='r')
+#fX = tables.open_file('data/Lorenz96_XMode_RRK_Pert_False.h5', mode='r')
+#fY = tables.open_file('data/Lorenz96_YMode_RRK_Pert_False.h5', mode='r')
 
 fX = tables.open_file('data/Lorenz96_XMode_RK_Pert_False_TU_100.h5', mode='r')
 fY = tables.open_file('data/Lorenz96_YMode_RK_Pert_False_TU_100.h5', mode='r')
 
+fXr = tables.open_file('data/Lorenz96_XMode_RRK_Pert_False_TU_100.h5', mode='r')
+fYr = tables.open_file('data/Lorenz96_YMode_RRK_Pert_False_TU_100.h5', mode='r')
+
+
 X = fX.root.array_X
 Y = fY.root.array_Y
+
+Xr = fXr.root.array_X
+Yr = fYr.root.array_Y
 
 #%%
 
@@ -72,32 +81,62 @@ if Model:
 if Histogram:    
     ## plot distribution of X modes
     plt.figure()
-    plt.hist(X[:,:K].flatten(),density=1,bins=30)
+    plt.hist(X[:,:K].flatten(),bins=30,density=1)
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.xlabel('X',fontsize=14)
-    plt.ylabel('PDF',fontsize=14)
+    plt.ylabel('relative frequency',fontsize=14)
     plt.title('PDF of X modes',fontsize=16)
     if SavePlot:
         plt.savefig(outdir + "Lorenz96_PDF_X_modes_TU_"+str(TU)+".png", dpi = 300)
     #plt.close(fig)
     
-    ## plot distribution of Y modes
     plt.figure()
-    plt.hist(Y[:,:J*K].flatten(),density=1,bins=30)
+    plt.hist(Xr[:,:K].flatten(),bins=30,density=1)
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
-    plt.xlabel('Y',fontsize=14)
-    plt.ylabel('PDF',fontsize=14)
-    plt.title('PDF of Y modes',fontsize=16)
+    plt.xlabel('X',fontsize=14)
+    plt.ylabel('relative frequency',fontsize=14)
+    plt.title('PDF of X modes with Wilks scheme',fontsize=16)
     if SavePlot:
-        plt.savefig(outdir + "Lorenz96_PDF_Y_modes_TU_"+str(TU)+".png", dpi = 300)
+        plt.savefig(outdir + "Lorenz96_PDF_Xr_modes_TU_"+str(TU)+".png", dpi = 300)
     #plt.close(fig)
+    
+    ## plot distribution of Y modes
+    #plt.figure()
+    #plt.hist(Y[:,:J*K].flatten(),density=1,bins=30)
+    #plt.xticks(fontsize=12)
+    #plt.yticks(fontsize=12)
+    #plt.xlabel('Y',fontsize=14)
+    #plt.ylabel('PDF',fontsize=14)
+    #plt.title('PDF of Y modes',fontsize=16)
+    #if SavePlot:
+    #    plt.savefig(outdir + "Lorenz96_PDF_Y_modes_TU_"+str(TU)+".png", dpi = 300)
+    #plt.close(fig)
+
+if Histogram_Diff:    
+    plt.figure()
+    #print(Xr[:,:K].shape)
+    #print(X[:,:K].shape)
+    hist=plt.hist((X[:,:K].flatten()),bins=30)
+    histr=plt.hist((Xr[:,:K].flatten()),bins=30)
+    plt.close()
+    plt.figure()
+    hist_diff=histr[0]-hist[0]
+    plt.bar(np.linspace(-15,15,30),hist_diff/np.sum(hist[0]))
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.xlabel('X',fontsize=14)
+    plt.ylabel('difference in relative frequency',fontsize=14)
+    plt.title('Difference to X modes in deterministic scheme',fontsize=16)
+    if SavePlot:
+        plt.savefig(outdir + "Lorenz96_PDF_X_modes_diff_TU_"+str(TU)+".png", dpi = 300)
 
 if Hovmoeller:
     ##hovmoeller diagramm
     plt.figure()
-    plt.contourf(X)
+    plt.contourf(X[9000:10000])
+    print(X.shape)
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.xlabel("X-Modes",fontsize=14)
@@ -106,7 +145,8 @@ if Hovmoeller:
     if SavePlot:
         plt.savefig(outdir + "Lorenz96_Hovmoeller_X_modes_TU_"+str(TU)+".png", dpi = 300)
     plt.figure()
-    plt.contourf(Y)
+    plt.contourf(Y[9000:10000,:50])
+    print(Y[9900:10000,:50].shape)
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.xlabel("Y-Modes",fontsize=14)
@@ -159,7 +199,7 @@ if Temp_Corr:
     plt.yticks(fontsize=12)
     plt.ylabel('Autokorrelation',fontsize=14)
     plt.xlabel('time lag',fontsize=14)
-    plt.title('Temporal Autocorrelation of X modes',fontsize=16)
+    plt.title('Temporal Autocorrelation of X modes with Wilks scheme',fontsize=16)
     if SavePlot:
         plt.savefig(outdir + "Lorenz96_TempCorr_X_modes_TU_"+str(TU)+".png", dpi = 300)
 
@@ -270,3 +310,6 @@ plt.show()
 
 fX.close()
 fY.close()
+
+fXr.close()
+fYr.close()
