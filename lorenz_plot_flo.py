@@ -19,11 +19,11 @@ except:
 
 ## Choose which Plots
 Model = False
-Histogram = False
-Histogram_Diff = False
+Histogram = True
+Histogram_Diff = True
 Hovmoeller = False
 Y_Forcing = False
-Temp_Corr = True
+Temp_Corr = False
 Spat_Corr = False
 Energy_cyle = False
 
@@ -81,7 +81,7 @@ if Model:
 if Histogram:    
     ## plot distribution of X modes
     plt.figure()
-    plt.hist(X[:,:K].flatten(),bins=30,density=1)
+    plt.hist(X[:,:K].flatten(),bins=36,density=1,range=(-15,20))
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.xlabel('X',fontsize=14)
@@ -92,7 +92,7 @@ if Histogram:
     #plt.close(fig)
     
     plt.figure()
-    plt.hist(Xr[:,:K].flatten(),bins=30,density=1)
+    plt.hist(Xr[:,:K].flatten(),bins=36,density=1,range=(-15,20))
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.xlabel('X',fontsize=14)
@@ -118,14 +118,15 @@ if Histogram_Diff:
     plt.figure()
     #print(Xr[:,:K].shape)
     #print(X[:,:K].shape)
-    hist=plt.hist((X[:,:K].flatten()),bins=30)
-    histr=plt.hist((Xr[:,:K].flatten()),bins=30)
+    hist=plt.hist((X[:,:K].flatten()),bins=36,range=(-15,20))
+    histr=plt.hist((Xr[:,:K].flatten()),bins=36,range=(-15,20))
     plt.close()
     plt.figure()
     hist_diff=histr[0]-hist[0]
-    plt.bar(np.linspace(-15,15,30),hist_diff/np.sum(hist[0]))
+    plt.bar(np.linspace(-15,20,36),hist_diff/np.sum(hist[0]),width=1)
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
+    plt.xlim(-15,20)
     plt.xlabel('X',fontsize=14)
     plt.ylabel('difference in relative frequency',fontsize=14)
     plt.title('Difference to X modes in deterministic scheme',fontsize=16)
