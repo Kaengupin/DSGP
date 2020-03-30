@@ -17,14 +17,14 @@ except:
     pass
 
 #Settings
-title1 = "Lorenz96_X_RRK_1"
-title2 = "Lorenz96_Y_RRK_1"
+title1 = "Lorenz96_XMode_RK_Pert_False.h5"
+title2 = "Lorenz96_YMode_RK_Pert_False.h5"
 
 #title3 = "Lorenz96_X_pert"
 #title4 = "Lorenz96_Y_pert"
 
-fX = tables.open_file(title1+'.h5', mode='r')
-fY = tables.open_file(title2+'.h5', mode='r')
+fX = tables.open_file('data/'+title1, mode='r')
+fY = tables.open_file('data/'+title2, mode='r')
 #fX1 = tables.open_file(title3+'.h5', mode='r')
 #fY1 = tables.open_file(title4+'.h5', mode='r')
 
@@ -97,7 +97,7 @@ plt.hist(X[:,:].flatten(),normed=1,bins=50)
 plt.ylabel('X')
 plt.xlabel('pdf')
 plt.title('PDF of X modes')
-#fig.savefig("PDF_X_Modes.pdf")    
+#fig.savefig("PDF_X_Modes.pdf")
 #
 #fig=plt.figure()
 #plt.hist(Y[:,:].flatten(),normed=1,bins=50)
