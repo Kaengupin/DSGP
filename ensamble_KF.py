@@ -86,11 +86,15 @@ def Runge_Kutta(X, Y, dt, K = 8, J = 32, F = 18):
 Init
 '''
 np.random.seed(1337)
-XT = np.zeros((K+3))+np.random.normal(size=K+3)
-YT = np.zeros((J*K+3))+np.random.normal(size=J*K+3)
+XT = np.zeros((K+3)) + np.random.normal(size=K+3)
+YT = np.zeros((J*K+3)) + np.random.normal(size=J*K+3)
 
-'''Analyse entspricht der Wahrheit im ersten Schritt. Später noch mit weißem Rauschen versehen'''
-XA, YA = XT, YT
+'''
+Analyse entspricht der Wahrheit im ersten Schritt.
+Später noch mit weißem Rauschen versehen
+
+'''
+XA, YA = np.zeros((num_ensmable_members,K+3)) + XT, np.zeros((num_ensmable_members,J*K+3)) + YT
 
 
 '''
@@ -102,7 +106,7 @@ atom = tables.Float64Atom()
 array_XT = fXT.create_earray(fXT.root, 'array_XT', tables.Float64Atom(), shape =(0,K + K*J), title='Controll run, X and Y for Lorenz96')
 array_XT.append(np.concatenate((XT[2:-1],YT[1:-2]),axis=None).reshape((1, K+J*K)))
 array_XA = fXA.create_earray(fXA.root, 'array_XA', tables.Float64Atom(), shape =(0,K + K*J), title='Analysis, X and Y for Lorenz96')
-array_XA.append(np.concatenate((XA[2:-1],YA[1:-2]),axis=None).reshape((1, K+J*K)))
+array_XA.append(np.concatenate((XA[:,2:-1],YA[:,1:-2]),axis=1).reshape((1,num_ensmable_members, K+J*K)))
 
 
 '''
@@ -134,29 +138,38 @@ for tt in range(1,int(T)):
 
     # True Update
     dXT, dYT = Runge_Kutta(XT, YT, t, K, J, True_Forcing)
-    XT, YT = XT + dXT, YT + dYT
+    XT, YT = XT + dXT, YT + dYT ''' + epsi ''' ##############################
 
     # Analysis Update
-    dXA, dYA = Runge_Kutta(XA, YA, t, K, J , Forecast_Forcing)
-    XA, YA = XA + dXA, YA + dYA
+    for ens in range(num_ensmable_members):
+        dXA, dYA = Runge_Kutta(XA[ens], YA[ens], t, K, J , Forecast_Forcing)
+        XA[ens], YA[ens] = XA[ens] + dXA, YA[ens] + dYA
 
     if (np.round(tt/save_timestep,4) % 1) == 0.:
         ''' Write data every save_timestep timesteps '''
         array_XT.append(np.concatenate((XT[2:-1],YT[1:-2]),axis=None).reshape((1, K+J*K)))
-        array_XA.append(np.concatenate((XA[2:-1],YA[1:-2]),axis=None).reshape((1, K+J*K)))
+        array_XA.append(np.concatenate((XA[:,2:-1],YA[:,1:-2]),axis=1).reshape((1,num_ensmable_members, K+J*K)))
 
     if (np.round(tt/analyse_cycle,4) % 1) == 0.:
         ''' Analyse Update Cycle every analyse_cycle timesteps (when obs are there). '''
-        # Create
-        obs = np.zeros((num_ensmable_members,num_of_obs))
-        for ens in range(num_ensmable_members):
-            obs[ens] = np.concatenate((XT[2:-1],YT[1:-2]),axis=None)[bool_list] + noice[ens] # nur ein Subset auswählen
+        # Create an Ensamble of Observations
+        #obs = np.zeros((num_ensmable_members,num_of_obs))
+        #for ens in range(num_ensmable_members):
+        #    obs[ens] = np.concatenate((XT[2:-1],YT[1:-2]),axis=None)[bool_list] + noice[ens] # nur ein Subset auswählen
 
+        vec = np.concatenate((XA[:,2:-1],YA[:,1:-2]),axis=1)        # State of all Ensamble Members
+        ens_mean = np.mean(vec, axis = 0)
+        P = np.zeros((K+J*K,K+J*K))
+        for ens in range(num_ensmable_members):
+            P = P + ((vec[ens]-ens_mean)[np.newaxis]).T @ ((vec[ens]-ens_mean)[np.newaxis])
+        P = P / (num_ensmable_members-1)
+
+        K = P @ H.T @ inv(H @ P @ H.T + R)
 
         analysis =
-
 
         XA = analysis[2:K+3] # needs a dopplecheck
         YA = analysis[K+5:-2] # needs a dopplecheck
 
 fXT.close()
+fXA.close()
